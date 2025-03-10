@@ -1,0 +1,1881 @@
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Car,
+  FileSpreadsheet,
+  Home,
+  LogOut,
+  Plus,
+  Settings,
+  User,
+  FileDown,
+  Search,
+  Filter,
+  AlertCircle,
+  ArrowRightCircle,
+  BarChart3,
+  ListFilter,
+  Zap,
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { Slider } from "@/components/ui/slider"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+export default function DealerBuyBoxDemo() {
+  // State to track which screen is currently shown
+  const [currentScreen, setCurrentScreen] = useState("login")
+
+  // State for the demo buy boxes
+  const [buyBoxes, setBuyBoxes] = useState([
+    {
+      id: "1",
+      name: "Luxury Sedans",
+      description: "High-end luxury sedans for premium inventory",
+      vehicleCount: 8,
+      lastUpdated: "2025-03-08",
+      dealerName: "Premium Auto Group",
+      dealerId: "PAG001",
+      vehicles: [
+        { make: "BMW", model: "5 Series", yearRange: "2018-2023", maxMileage: 50000, maxPrice: 45000 },
+        { make: "Mercedes", model: "E-Class", yearRange: "2019-2023", maxMileage: 45000, maxPrice: 50000 },
+        { make: "Audi", model: "A6", yearRange: "2018-2023", maxMileage: 55000, maxPrice: 48000 },
+      ],
+    },
+    {
+      id: "2",
+      name: "SUVs Under 50k Miles",
+      description: "Popular SUV models with low mileage",
+      vehicleCount: 12,
+      lastUpdated: "2025-03-05",
+      dealerName: "Hometown Motors",
+      dealerId: "HTM002",
+      vehicles: [
+        { make: "Toyota", model: "RAV4", yearRange: "2019-2023", maxMileage: 50000, maxPrice: 32000 },
+        { make: "Honda", model: "CR-V", yearRange: "2018-2023", maxMileage: 45000, maxPrice: 30000 },
+        { make: "Ford", model: "Escape", yearRange: "2019-2023", maxMileage: 48000, maxPrice: 28000 },
+      ],
+    },
+    {
+      id: "3",
+      name: "Economy Vehicles",
+      description: "Fuel-efficient economy cars",
+      vehicleCount: 10,
+      lastUpdated: "2025-03-07",
+      dealerName: "City Auto Sales",
+      dealerId: "CAS003",
+      vehicles: [
+        { make: "Honda", model: "Civic", yearRange: "2018-2023", maxMileage: 60000, maxPrice: 25000 },
+        { make: "Toyota", model: "Corolla", yearRange: "2018-2023", maxMileage: 65000, maxPrice: 23000 },
+        { make: "Hyundai", model: "Elantra", yearRange: "2019-2023", maxMileage: 55000, maxPrice: 22000 },
+      ],
+    },
+    {
+      id: "4",
+      name: "Trucks & Work Vehicles",
+      description: "Pickup trucks and commercial vehicles",
+      vehicleCount: 15,
+      lastUpdated: "2025-03-06",
+      dealerName: "Truck World",
+      dealerId: "TW004",
+      vehicles: [
+        { make: "Ford", model: "F-150", yearRange: "2017-2023", maxMileage: 75000, maxPrice: 40000 },
+        { make: "Chevrolet", model: "Silverado", yearRange: "2017-2023", maxMileage: 80000, maxPrice: 38000 },
+        { make: "Ram", model: "1500", yearRange: "2018-2023", maxMileage: 70000, maxPrice: 42000 },
+      ],
+    },
+  ])
+
+  // Sample inventory data for search/disposition
+  const [inventory, setInventory] = useState([
+    {
+      id: "V001",
+      vin: "1HGCM82633A123456",
+      year: 2021,
+      make: "Honda",
+      model: "Civic",
+      trim: "EX",
+      mileage: 32500,
+      price: 22800,
+      color: "Blue",
+      condition: "Excellent",
+      location: "Main Lot",
+      daysInInventory: 15,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [{ buyBoxId: "3", dealerName: "City Auto Sales", matchScore: 95 }],
+    },
+    {
+      id: "V002",
+      vin: "5UXWX9C55H0T78901",
+      year: 2020,
+      make: "BMW",
+      model: "5 Series",
+      trim: "530i",
+      mileage: 45200,
+      price: 38500,
+      color: "Black",
+      condition: "Very Good",
+      location: "Main Lot",
+      daysInInventory: 22,
+      structuralDamage: false,
+      accidentHistory: "Minor (1)",
+      matches: [{ buyBoxId: "1", dealerName: "Premium Auto Group", matchScore: 88 }],
+    },
+    {
+      id: "V003",
+      vin: "1FTEW1EP5MFA34567",
+      year: 2019,
+      make: "Ford",
+      model: "F-150",
+      trim: "XLT",
+      mileage: 62000,
+      price: 32900,
+      color: "Silver",
+      condition: "Good",
+      location: "Overflow Lot",
+      daysInInventory: 30,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [{ buyBoxId: "4", dealerName: "Truck World", matchScore: 92 }],
+    },
+    {
+      id: "V004",
+      vin: "JTMRFREV5HD123789",
+      year: 2020,
+      make: "Toyota",
+      model: "RAV4",
+      trim: "XLE",
+      mileage: 38700,
+      price: 27500,
+      color: "White",
+      condition: "Excellent",
+      location: "Main Lot",
+      daysInInventory: 18,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [{ buyBoxId: "2", dealerName: "Hometown Motors", matchScore: 97 }],
+    },
+    {
+      id: "V005",
+      vin: "5TDDZRBH9LS567890",
+      year: 2022,
+      make: "Toyota",
+      model: "Highlander",
+      trim: "Limited",
+      mileage: 28300,
+      price: 41200,
+      color: "Gray",
+      condition: "Excellent",
+      location: "Main Lot",
+      daysInInventory: 10,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [],
+    },
+    {
+      id: "V006",
+      vin: "1G1ZD5ST7JF234567",
+      year: 2018,
+      make: "Chevrolet",
+      model: "Malibu",
+      trim: "LT",
+      mileage: 58900,
+      price: 18500,
+      color: "Red",
+      condition: "Good",
+      location: "Overflow Lot",
+      daysInInventory: 45,
+      structuralDamage: false,
+      accidentHistory: "Minor (1)",
+      matches: [],
+    },
+    {
+      id: "V007",
+      vin: "3CZRU6H78JM345678",
+      year: 2019,
+      make: "Honda",
+      model: "HR-V",
+      trim: "EX-L",
+      mileage: 42600,
+      price: 24300,
+      color: "Blue",
+      condition: "Very Good",
+      location: "Main Lot",
+      daysInInventory: 28,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [],
+    },
+    {
+      id: "V008",
+      vin: "WAUENAF47JN456789",
+      year: 2020,
+      make: "Audi",
+      model: "A4",
+      trim: "Premium Plus",
+      mileage: 36800,
+      price: 35700,
+      color: "Black",
+      condition: "Excellent",
+      location: "Main Lot",
+      daysInInventory: 20,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [],
+    },
+    {
+      id: "V009",
+      vin: "1C4RJFBG5LC567890",
+      year: 2021,
+      make: "Jeep",
+      model: "Grand Cherokee",
+      trim: "Limited",
+      mileage: 31200,
+      price: 39800,
+      color: "Green",
+      condition: "Excellent",
+      location: "Main Lot",
+      daysInInventory: 14,
+      structuralDamage: false,
+      accidentHistory: "None",
+      matches: [],
+    },
+    {
+      id: "V010",
+      vin: "5NPE34AF1LH678901",
+      year: 2019,
+      make: "Hyundai",
+      model: "Sonata",
+      trim: "SEL",
+      mileage: 48500,
+      price: 21900,
+      color: "Silver",
+      condition: "Very Good",
+      location: "Overflow Lot",
+      daysInInventory: 32,
+      structuralDamage: false,
+      accidentHistory: "Minor (1)",
+      matches: [],
+    },
+  ])
+
+  // State for search filters
+  const [searchFilters, setSearchFilters] = useState({
+    keyword: "",
+    make: "",
+    model: "",
+    yearMin: "",
+    yearMax: "",
+    priceMin: "",
+    priceMax: "",
+    mileageMax: "",
+    hasMatches: false,
+    daysInInventory: "",
+  })
+
+  // State for selected vehicle for detailed view
+  const [selectedVehicle, setSelectedVehicle] = useState(null)
+
+  // State for new buy box creation
+  const [newBuyBox, setNewBuyBox] = useState({
+    name: "",
+    description: "",
+    vehicles: [],
+  })
+
+  // State for new vehicle in buy box creation
+  const [newVehicle, setNewVehicle] = useState({
+    make: "",
+    model: "",
+    yearStart: 2018,
+    yearEnd: 2024,
+    maxMileage: 100000,
+    maxPrice: 30000,
+    structuralDamageOk: false,
+    accidentHistoryMatters: true,
+    accidentHistoryDetails: "",
+  })
+
+  // State for active tab in buy box creation
+  const [activeTab, setActiveTab] = useState("general")
+
+  // Handle login
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setCurrentScreen("dashboard")
+  }
+
+  // Handle adding a new vehicle to the buy box
+  const handleAddVehicle = () => {
+    if (!newVehicle.make || !newVehicle.model) return
+
+    setNewBuyBox((prev) => ({
+      ...prev,
+      vehicles: [
+        ...prev.vehicles,
+        {
+          id: Date.now().toString(),
+          make: newVehicle.make,
+          model: newVehicle.model,
+          yearRange: `${newVehicle.yearStart}-${newVehicle.yearEnd}`,
+          maxMileage: newVehicle.maxMileage,
+          maxPrice: newVehicle.maxPrice,
+          structuralDamageOk: newVehicle.structuralDamageOk,
+          accidentHistoryMatters: newVehicle.accidentHistoryMatters,
+          accidentHistoryDetails: newVehicle.accidentHistoryDetails,
+        },
+      ],
+    }))
+
+    // Reset form except for make
+    setNewVehicle((prev) => ({
+      ...prev,
+      model: "",
+      yearStart: 2018,
+      yearEnd: 2024,
+      maxMileage: 100000,
+      maxPrice: 30000,
+      structuralDamageOk: false,
+      accidentHistoryMatters: true,
+      accidentHistoryDetails: "",
+    }))
+  }
+
+  // Handle removing a vehicle from the buy box
+  const handleRemoveVehicle = (id: string) => {
+    setNewBuyBox((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.filter((v) => v.id !== id),
+    }))
+  }
+
+  // Handle saving a new buy box
+  const handleSaveBuyBox = () => {
+    const newBox = {
+      id: Date.now().toString(),
+      name: newBuyBox.name,
+      description: newBuyBox.description,
+      vehicleCount: newBuyBox.vehicles.length,
+      lastUpdated: new Date().toISOString().split("T")[0],
+      dealerName: "Your Dealership",
+      dealerId: "YD" + Math.floor(Math.random() * 1000),
+      vehicles: newBuyBox.vehicles,
+    }
+
+    setBuyBoxes((prev) => [newBox, ...prev])
+    setNewBuyBox({ name: "", description: "", vehicles: [] })
+    setCurrentScreen("buyBoxes")
+  }
+
+  // Handle exporting a buy box
+  const handleExport = (format: string) => {
+    alert(`Exporting to ${format}... In a real application, this would download a file.`)
+  }
+
+  // Filter inventory based on search filters
+  const filteredInventory = inventory.filter((vehicle) => {
+    // Keyword search (searches in make, model, trim, and VIN)
+    if (
+      searchFilters.keyword &&
+      !`${vehicle.make} ${vehicle.model} ${vehicle.trim} ${vehicle.vin}`
+        .toLowerCase()
+        .includes(searchFilters.keyword.toLowerCase())
+    ) {
+      return false
+    }
+
+    // Make filter
+    if (searchFilters.make && vehicle.make !== searchFilters.make) {
+      return false
+    }
+
+    // Model filter
+    if (searchFilters.model && searchFilters.model !== "all_models" && vehicle.model !== searchFilters.model) {
+      return false
+    }
+
+    // Year range filter
+    if (searchFilters.yearMin && vehicle.year < Number.parseInt(searchFilters.yearMin)) {
+      return false
+    }
+    if (searchFilters.yearMax && vehicle.year > Number.parseInt(searchFilters.yearMax)) {
+      return false
+    }
+
+    // Price range filter
+    if (searchFilters.priceMin && vehicle.price < Number.parseInt(searchFilters.priceMin)) {
+      return false
+    }
+    if (searchFilters.priceMax && vehicle.price > Number.parseInt(searchFilters.priceMax)) {
+      return false
+    }
+
+    // Mileage filter
+    if (searchFilters.mileageMax && vehicle.mileage > Number.parseInt(searchFilters.mileageMax)) {
+      return false
+    }
+
+    // Has matches filter
+    if (searchFilters.hasMatches && vehicle.matches.length === 0) {
+      return false
+    }
+
+    // Days in inventory filter
+    if (searchFilters.daysInInventory) {
+      const days = Number.parseInt(searchFilters.daysInInventory)
+      if (vehicle.daysInInventory < days) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  // Handle search filter changes
+  const handleFilterChange = (key: string, value: string | boolean) => {
+    setSearchFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
+
+  // Reset search filters
+  const resetFilters = () => {
+    setSearchFilters({
+      keyword: "",
+      make: "",
+      model: "",
+      yearMin: "",
+      yearMax: "",
+      priceMin: "",
+      priceMax: "",
+      mileageMax: "",
+      hasMatches: false,
+      daysInInventory: "",
+    })
+  }
+
+  // Handle vehicle selection for detailed view
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle)
+  }
+
+  // Handle disposition action
+  const handleDisposition = (action: string, vehicleId: string, buyBoxId?: string) => {
+    // In a real application, this would update the database
+    alert(`Vehicle ${vehicleId} ${action} ${buyBoxId ? `to dealer with buy box ${buyBoxId}` : ""}`)
+
+    // Close the detail view
+    setSelectedVehicle(null)
+
+    // Update the local state to simulate the action
+    if (action === "disposed") {
+      setInventory((prev) => prev.filter((v) => v.id !== vehicleId))
+    }
+  }
+
+  // Render the appropriate screen based on currentScreen state
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case "login":
+        return (
+          <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-muted/40">
+            <Card className="w-full max-w-md">
+              <CardHeader className="space-y-1">
+                <div className="flex justify-center mb-4">
+                  <div className="flex items-center justify-center gap-2">
+                    <Car className="h-6 w-6" />
+                    <span className="font-bold text-xl">DealerBuyBox</span>
+                  </div>
+                </div>
+                <CardTitle className="text-2xl font-bold text-center">Demo Login</CardTitle>
+                <CardDescription className="text-center">Enter any credentials to access the demo</CardDescription>
+              </CardHeader>
+              <form onSubmit={handleLogin}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" placeholder="dealer@example.com" defaultValue="demo@dealerbuybox.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" type="password" defaultValue="password123" />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-4">
+                  <Button type="submit" className="w-full">
+                    Log in to Demo
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </div>
+        )
+
+      case "dashboard":
+        return (
+          <div className="flex min-h-screen bg-muted/40">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-64 flex-col bg-background border-r p-4">
+              <div className="flex items-center gap-2 mb-6">
+                <Car className="h-6 w-6" />
+                <span className="font-bold text-xl">DealerBuyBox</span>
+              </div>
+              <nav className="space-y-1 flex-1">
+                <button
+                  onClick={() => setCurrentScreen("dashboard")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-left"
+                >
+                  <Home className="h-5 w-5" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("buyBoxes")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Car className="h-5 w-5" />
+                  My Buy Boxes
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("disposition")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Zap className="h-5 w-5" />
+                  Vehicle Disposition
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <User className="h-5 w-5" />
+                  Profile
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </button>
+              </nav>
+              <div className="mt-auto pt-4 border-t">
+                <Button variant="outline" className="w-full justify-start" onClick={() => setCurrentScreen("login")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1 p-4 md:p-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold">Dashboard</h1>
+                    <p className="text-muted-foreground">Welcome to your DealerBuyBox dashboard</p>
+                  </div>
+                  <div className="mt-4 md:mt-0 flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setCurrentScreen("buyBoxes")}>
+                      <Car className="mr-2 h-4 w-4" />
+                      My Buy Boxes
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setNewBuyBox({ name: "", description: "", vehicles: [] })
+                        setActiveTab("general")
+                        setCurrentScreen("createBuyBox")
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Buy Box
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Summary cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Active Buy Boxes</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{buyBoxes.length}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Total Vehicles</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {buyBoxes.reduce((total, box) => total + box.vehicleCount, 0)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">Exports This Month</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">12</div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Recent Buy Boxes */}
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Recent Buy Boxes</CardTitle>
+                    <CardDescription>Your recently created or updated buy boxes</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {buyBoxes.slice(0, 3).map((buyBox) => (
+                        <div
+                          key={buyBox.id}
+                          className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="mb-2 md:mb-0">
+                            <div className="font-medium">{buyBox.name}</div>
+                            <div className="text-sm text-muted-foreground">{buyBox.description}</div>
+                          </div>
+                          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+                            <Badge variant="outline">{buyBox.vehicleCount} vehicles</Badge>
+                            <div className="text-xs text-muted-foreground">Updated: {buyBox.lastUpdated}</div>
+                            <div className="flex gap-2">
+                              <Button variant="outline" size="sm" className="h-8" onClick={() => handleExport("Excel")}>
+                                <FileSpreadsheet className="h-4 w-4 mr-1" />
+                                Export
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8"
+                                onClick={() => {
+                                  setCurrentScreen("viewBuyBox")
+                                }}
+                              >
+                                View
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="border-t px-6 py-4">
+                    <Button variant="outline" className="w-full" onClick={() => setCurrentScreen("buyBoxes")}>
+                      View All Buy Boxes
+                    </Button>
+                  </CardFooter>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Actions</CardTitle>
+                    <CardDescription>Common tasks and shortcuts</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Button
+                        variant="outline"
+                        className="h-auto flex flex-col items-center justify-center p-6 gap-2"
+                        onClick={() => {
+                          setNewBuyBox({ name: "", description: "", vehicles: [] })
+                          setActiveTab("general")
+                          setCurrentScreen("createBuyBox")
+                        }}
+                      >
+                        <Plus className="h-8 w-8 mb-2" />
+                        <div className="font-medium">Create New Buy Box</div>
+                        <div className="text-xs text-muted-foreground">Build a custom vehicle list</div>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-auto flex flex-col items-center justify-center p-6 gap-2"
+                        onClick={() => setCurrentScreen("disposition")}
+                      >
+                        <Zap className="h-8 w-8 mb-2" />
+                        <div className="font-medium">Vehicle Disposition</div>
+                        <div className="text-xs text-muted-foreground">Match vehicles to buy boxes</div>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-auto flex flex-col items-center justify-center p-6 gap-2"
+                        onClick={() => handleExport("Excel")}
+                      >
+                        <FileDown className="h-8 w-8 mb-2" />
+                        <div className="font-medium">Export to Excel</div>
+                        <div className="text-xs text-muted-foreground">Download your buy boxes</div>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </main>
+          </div>
+        )
+
+      case "buyBoxes":
+        return (
+          <div className="flex min-h-screen bg-muted/40">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-64 flex-col bg-background border-r p-4">
+              <div className="flex items-center gap-2 mb-6">
+                <Car className="h-6 w-6" />
+                <span className="font-bold text-xl">DealerBuyBox</span>
+              </div>
+              <nav className="space-y-1 flex-1">
+                <button
+                  onClick={() => setCurrentScreen("dashboard")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Home className="h-5 w-5" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("buyBoxes")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-left"
+                >
+                  <Car className="h-5 w-5" />
+                  My Buy Boxes
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("disposition")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Zap className="h-5 w-5" />
+                  Vehicle Disposition
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <User className="h-5 w-5" />
+                  Profile
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </button>
+              </nav>
+              <div className="mt-auto pt-4 border-t">
+                <Button variant="outline" className="w-full justify-start" onClick={() => setCurrentScreen("login")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1 p-4 md:p-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold">My Buy Boxes</h1>
+                    <p className="text-muted-foreground">Manage your vehicle acquisition lists</p>
+                  </div>
+                  <div className="mt-4 md:mt-0">
+                    <Button
+                      onClick={() => {
+                        setNewBuyBox({ name: "", description: "", vehicles: [] })
+                        setActiveTab("general")
+                        setCurrentScreen("createBuyBox")
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Buy Box
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Search and filters */}
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Search buy boxes..." className="pl-8" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Select defaultValue="recent">
+                      <SelectTrigger className="w-[180px]">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="recent">Most Recent</SelectItem>
+                        <SelectItem value="name">Name</SelectItem>
+                        <SelectItem value="vehicles">Vehicle Count</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" onClick={() => handleExport("Excel")}>
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Export All
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Buy boxes list */}
+                <div className="space-y-4">
+                  {buyBoxes.map((buyBox) => (
+                    <Card key={buyBox.id} className="overflow-hidden">
+                      <CardHeader className="pb-3">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                          <CardTitle>{buyBox.name}</CardTitle>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">{buyBox.vehicleCount} vehicles</Badge>
+                            <Button variant="outline" size="sm" onClick={() => handleExport("Excel")}>
+                              <FileSpreadsheet className="h-4 w-4 mr-1" />
+                              Export
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => setCurrentScreen("viewBuyBox")}>
+                              View
+                            </Button>
+                          </div>
+                        </div>
+                        <CardDescription>{buyBox.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-sm text-muted-foreground mb-2">Last updated: {buyBox.lastUpdated}</div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {buyBox.vehicles.slice(0, 3).map((vehicle, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {vehicle.make} {vehicle.model} ({vehicle.yearRange})
+                            </Badge>
+                          ))}
+                          {buyBox.vehicleCount > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{buyBox.vehicleCount - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </main>
+          </div>
+        )
+
+      case "disposition":
+        return (
+          <div className="flex min-h-screen bg-muted/40">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-64 flex-col bg-background border-r p-4">
+              <div className="flex items-center gap-2 mb-6">
+                <Car className="h-6 w-6" />
+                <span className="font-bold text-xl">DealerBuyBox</span>
+              </div>
+              <nav className="space-y-1 flex-1">
+                <button
+                  onClick={() => setCurrentScreen("dashboard")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Home className="h-5 w-5" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("buyBoxes")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Car className="h-5 w-5" />
+                  My Buy Boxes
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("disposition")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-left"
+                >
+                  <Zap className="h-5 w-5" />
+                  Vehicle Disposition
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <User className="h-5 w-5" />
+                  Profile
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </button>
+              </nav>
+              <div className="mt-auto pt-4 border-t">
+                <Button variant="outline" className="w-full justify-start" onClick={() => setCurrentScreen("login")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1 p-4 md:p-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold">Vehicle Disposition</h1>
+                    <p className="text-muted-foreground">Match vehicles to dealer buy boxes</p>
+                  </div>
+                  <div className="mt-4 md:mt-0 flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setCurrentScreen("dashboard")}>
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Search and filters */}
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Search Inventory</CardTitle>
+                    <CardDescription>Find vehicles to match with dealer buy boxes</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search by make, model, VIN..."
+                          className="pl-8"
+                          value={searchFilters.keyword}
+                          onChange={(e) => handleFilterChange("keyword", e.target.value)}
+                        />
+                      </div>
+
+                      <Select value={searchFilters.make} onValueChange={(value) => handleFilterChange("make", value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Make" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Makes</SelectItem>
+                          <SelectItem value="Honda">Honda</SelectItem>
+                          <SelectItem value="Toyota">Toyota</SelectItem>
+                          <SelectItem value="Ford">Ford</SelectItem>
+                          <SelectItem value="Chevrolet">Chevrolet</SelectItem>
+                          <SelectItem value="BMW">BMW</SelectItem>
+                          <SelectItem value="Hyundai">Hyundai</SelectItem>
+                          <SelectItem value="Jeep">Jeep</SelectItem>
+                          <SelectItem value="Audi">Audi</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select
+                        value={searchFilters.model}
+                        onValueChange={(value) => handleFilterChange("model", value)}
+                        disabled={!searchFilters.make}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Model" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all_models">All Models</SelectItem>
+                          {searchFilters.make === "Honda" && (
+                            <>
+                              <SelectItem value="Civic">Civic</SelectItem>
+                              <SelectItem value="Accord">Accord</SelectItem>
+                              <SelectItem value="CR-V">CR-V</SelectItem>
+                              <SelectItem value="HR-V">HR-V</SelectItem>
+                            </>
+                          )}
+                          {searchFilters.make === "Toyota" && (
+                            <>
+                              <SelectItem value="Corolla">Corolla</SelectItem>
+                              <SelectItem value="Camry">Camry</SelectItem>
+                              <SelectItem value="RAV4">RAV4</SelectItem>
+                              <SelectItem value="Highlander">Highlander</SelectItem>
+                            </>
+                          )}
+                          {searchFilters.make === "Ford" && (
+                            <>
+                              <SelectItem value="F-150">F-150</SelectItem>
+                              <SelectItem value="Escape">Escape</SelectItem>
+                              <SelectItem value="Explorer">Explorer</SelectItem>
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="hasMatches"
+                          checked={searchFilters.hasMatches}
+                          onCheckedChange={(checked) => handleFilterChange("hasMatches", checked === true)}
+                        />
+                        <label
+                          htmlFor="hasMatches"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Show only vehicles with matches
+                        </label>
+                      </div>
+
+                      <Select
+                        value={searchFilters.daysInInventory}
+                        onValueChange={(value) => handleFilterChange("daysInInventory", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Days in Inventory" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="7">7+ days</SelectItem>
+                          <SelectItem value="14">14+ days</SelectItem>
+                          <SelectItem value="30">30+ days</SelectItem>
+                          <SelectItem value="60">60+ days</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Button variant="outline" onClick={resetFilters}>
+                        <ListFilter className="mr-2 h-4 w-4" />
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Results */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Inventory Results</CardTitle>
+                    <CardDescription>{filteredInventory.length} vehicles found</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Vehicle</TableHead>
+                            <TableHead>VIN</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Mileage</TableHead>
+                            <TableHead>Days</TableHead>
+                            <TableHead>Matches</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredInventory.map((vehicle) => (
+                            <TableRow key={vehicle.id}>
+                              <TableCell className="font-medium">
+                                {vehicle.year} {vehicle.make} {vehicle.model} {vehicle.trim}
+                              </TableCell>
+                              <TableCell className="font-mono text-xs">{vehicle.vin}</TableCell>
+                              <TableCell>${vehicle.price.toLocaleString()}</TableCell>
+                              <TableCell>{vehicle.mileage.toLocaleString()}</TableCell>
+                              <TableCell>{vehicle.daysInInventory}</TableCell>
+                              <TableCell>
+                                {vehicle.matches.length > 0 ? (
+                                  <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+                                    {vehicle.matches.length} matches
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline">No matches</Badge>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Button variant="ghost" size="sm" onClick={() => handleVehicleSelect(vehicle)}>
+                                  View Details
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </main>
+
+            {/* Vehicle Detail Dialog */}
+            {selectedVehicle && (
+              <Dialog open={!!selectedVehicle} onOpenChange={() => setSelectedVehicle(null)}>
+                <DialogContent className="max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} {selectedVehicle.trim}
+                    </DialogTitle>
+                    <DialogDescription>
+                      VIN: {selectedVehicle.vin} | {selectedVehicle.daysInInventory} days in inventory
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Vehicle Details</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price:</span>
+                          <span className="font-medium">${selectedVehicle.price.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Mileage:</span>
+                          <span className="font-medium">{selectedVehicle.mileage.toLocaleString()} miles</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Color:</span>
+                          <span className="font-medium">{selectedVehicle.color}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Condition:</span>
+                          <span className="font-medium">{selectedVehicle.condition}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Structural Damage:</span>
+                          <span className="font-medium">{selectedVehicle.structuralDamage ? "Yes" : "No"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Accident History:</span>
+                          <span className="font-medium">{selectedVehicle.accidentHistory}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Location:</span>
+                          <span className="font-medium">{selectedVehicle.location}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Matching Buy Boxes</h3>
+                      {selectedVehicle.matches.length > 0 ? (
+                        <ScrollArea className="h-[200px] rounded-md border p-4">
+                          <div className="space-y-4">
+                            {selectedVehicle.matches.map((match) => {
+                              const buyBox = buyBoxes.find((b) => b.id === match.buyBoxId)
+                              return (
+                                <div key={match.buyBoxId} className="border rounded-md p-3">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <div>
+                                      <div className="font-medium">{buyBox?.name}</div>
+                                      <div className="text-sm text-muted-foreground">{match.dealerName}</div>
+                                    </div>
+                                    <Badge className="bg-green-100 text-green-800">{match.matchScore}% Match</Badge>
+                                  </div>
+                                  <div className="flex justify-end mt-2">
+                                    <Button
+                                      size="sm"
+                                      className="bg-green-600 hover:bg-green-700"
+                                      onClick={() => handleDisposition("disposed", selectedVehicle.id, match.buyBoxId)}
+                                    >
+                                      <ArrowRightCircle className="mr-2 h-4 w-4" />
+                                      Dispose to Dealer
+                                    </Button>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </ScrollArea>
+                      ) : (
+                        <div className="border rounded-md p-4 text-center">
+                          <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                          <p>No matching buy boxes found for this vehicle.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <DialogFooter className="flex justify-between items-center">
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={() => handleDisposition("hold", selectedVehicle.id)}>
+                        Hold Vehicle
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDisposition("wholesale", selectedVehicle.id)}
+                      >
+                        Send to Wholesale
+                      </Button>
+                    </div>
+                    <Button onClick={() => setSelectedVehicle(null)}>Close</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        )
+
+      case "createBuyBox":
+        return (
+          <div className="flex min-h-screen bg-muted/40">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-64 flex-col bg-background border-r p-4">
+              <div className="flex items-center gap-2 mb-6">
+                <Car className="h-6 w-6" />
+                <span className="font-bold text-xl">DealerBuyBox</span>
+              </div>
+              <nav className="space-y-1 flex-1">
+                <button
+                  onClick={() => setCurrentScreen("dashboard")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Home className="h-5 w-5" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("buyBoxes")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-left"
+                >
+                  <Car className="h-5 w-5" />
+                  My Buy Boxes
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("disposition")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Zap className="h-5 w-5" />
+                  Vehicle Disposition
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <User className="h-5 w-5" />
+                  Profile
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </button>
+              </nav>
+              <div className="mt-auto pt-4 border-t">
+                <Button variant="outline" className="w-full justify-start" onClick={() => setCurrentScreen("login")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1 p-4 md:p-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold">Create Buy Box</h1>
+                    <p className="text-muted-foreground">Define the vehicles you're looking to acquire</p>
+                  </div>
+                  <div className="mt-4 md:mt-0 flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setCurrentScreen("buyBoxes")}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveBuyBox} disabled={!newBuyBox.name || newBuyBox.vehicles.length === 0}>
+                      Save Buy Box
+                    </Button>
+                  </div>
+                </div>
+
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="general">General Information</TabsTrigger>
+                    <TabsTrigger value="vehicles">Vehicle Selection</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="general" className="space-y-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Buy Box Details</CardTitle>
+                        <CardDescription>Provide general information about this buy box</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Buy Box Name</Label>
+                          <Input
+                            id="name"
+                            placeholder="e.g., Luxury Sedans, Economy SUVs, etc."
+                            value={newBuyBox.name}
+                            onChange={(e) => setNewBuyBox({ ...newBuyBox, name: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            placeholder="Describe the purpose of this buy box"
+                            rows={4}
+                            value={newBuyBox.description}
+                            onChange={(e) => setNewBuyBox({ ...newBuyBox, description: e.target.value })}
+                          />
+                        </div>
+                      </CardContent>
+                      <CardFooter className="flex justify-between border-t p-6">
+                        <Button variant="outline" onClick={() => setCurrentScreen("buyBoxes")}>
+                          Cancel
+                        </Button>
+                        <Button onClick={() => setActiveTab("vehicles")} disabled={!newBuyBox.name}>
+                          Continue to Vehicle Selection
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="vehicles" className="space-y-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Add Vehicles</CardTitle>
+                        <CardDescription>Select the vehicles you're looking to acquire</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="make">Make</Label>
+                            <Select
+                              value={newVehicle.make}
+                              onValueChange={(value) => setNewVehicle({ ...newVehicle, make: value })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select make" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px]">
+                                <SelectItem value="Acura">Acura</SelectItem>
+                                <SelectItem value="BMW">BMW</SelectItem>
+                                <SelectItem value="Buick">Buick</SelectItem>
+                                <SelectItem value="Cadillac">Cadillac</SelectItem>
+                                <SelectItem value="Chevrolet">Chevrolet</SelectItem>
+                                <SelectItem value="Chrysler">Chrysler</SelectItem>
+                                <SelectItem value="Dodge">Dodge</SelectItem>
+                                <SelectItem value="Ford">Ford</SelectItem>
+                                <SelectItem value="Genesis">Genesis</SelectItem>
+                                <SelectItem value="GMC">GMC</SelectItem>
+                                <SelectItem value="Honda">Honda</SelectItem>
+                                <SelectItem value="Hyundai">Hyundai</SelectItem>
+                                <SelectItem value="Infiniti">Infiniti</SelectItem>
+                                <SelectItem value="Jaguar">Jaguar</SelectItem>
+                                <SelectItem value="Jeep">Jeep</SelectItem>
+                                <SelectItem value="Kia">Kia</SelectItem>
+                                <SelectItem value="Lexus">Lexus</SelectItem>
+                                <SelectItem value="Lincoln">Lincoln</SelectItem>
+                                <SelectItem value="Mazda">Mazda</SelectItem>
+                                <SelectItem value="Mercedes">Mercedes</SelectItem>
+                                <SelectItem value="Mini">Mini</SelectItem>
+                                <SelectItem value="Mitsubishi">Mitsubishi</SelectItem>
+                                <SelectItem value="Nissan">Nissan</SelectItem>
+                                <SelectItem value="Ram">Ram</SelectItem>
+                                <SelectItem value="Subaru">Subaru</SelectItem>
+                                <SelectItem value="Tesla">Tesla</SelectItem>
+                                <SelectItem value="Toyota">Toyota</SelectItem>
+                                <SelectItem value="Volkswagen">Volkswagen</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="model">Model</Label>
+                            <Select
+                              value={newVehicle.model}
+                              onValueChange={(value) => setNewVehicle({ ...newVehicle, model: value })}
+                              disabled={!newVehicle.make}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select model" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px]">
+                                {newVehicle.make === "Acura" && (
+                                  <>
+                                    <SelectItem value="ILX">ILX</SelectItem>
+                                    <SelectItem value="MDX">MDX</SelectItem>
+                                    <SelectItem value="RDX">RDX</SelectItem>
+                                    <SelectItem value="TLX">TLX</SelectItem>
+                                    <SelectItem value="NSX">NSX</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Alfa Romeo" && (
+                                  <>
+                                    <SelectItem value="Giulia">Giulia</SelectItem>
+                                    <SelectItem value="Stelvio">Stelvio</SelectItem>
+                                    <SelectItem value="4C">4C</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Audi" && (
+                                  <>
+                                    <SelectItem value="A3">A3</SelectItem>
+                                    <SelectItem value="A4">A4</SelectItem>
+                                    <SelectItem value="A5">A5</SelectItem>
+                                    <SelectItem value="A6">A6</SelectItem>
+                                    <SelectItem value="A7">A7</SelectItem>
+                                    <SelectItem value="A8">A8</SelectItem>
+                                    <SelectItem value="Q3">Q3</SelectItem>
+                                    <SelectItem value="Q5">Q5</SelectItem>
+                                    <SelectItem value="Q7">Q7</SelectItem>
+                                    <SelectItem value="Q8">Q8</SelectItem>
+                                    <SelectItem value="e-tron">e-tron</SelectItem>
+                                    <SelectItem value="TT">TT</SelectItem>
+                                    <SelectItem value="R8">R8</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "BMW" && (
+                                  <>
+                                    <SelectItem value="2 Series">2 Series</SelectItem>
+                                    <SelectItem value="3 Series">3 Series</SelectItem>
+                                    <SelectItem value="4 Series">4 Series</SelectItem>
+                                    <SelectItem value="5 Series">5 Series</SelectItem>
+                                    <SelectItem value="7 Series">7 Series</SelectItem>
+                                    <SelectItem value="8 Series">8 Series</SelectItem>
+                                    <SelectItem value="X1">X1</SelectItem>
+                                    <SelectItem value="X3">X3</SelectItem>
+                                    <SelectItem value="X5">X5</SelectItem>
+                                    <SelectItem value="X7">X7</SelectItem>
+                                    <SelectItem value="i3">i3</SelectItem>
+                                    <SelectItem value="i8">i8</SelectItem>
+                                    <SelectItem value="Z4">Z4</SelectItem>
+                                    <SelectItem value="M3">M3</SelectItem>
+                                    <SelectItem value="M5">M5</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Chevrolet" && (
+                                  <>
+                                    <SelectItem value="Blazer">Blazer</SelectItem>
+                                    <SelectItem value="Bolt">Bolt</SelectItem>
+                                    <SelectItem value="Camaro">Camaro</SelectItem>
+                                    <SelectItem value="Colorado">Colorado</SelectItem>
+                                    <SelectItem value="Corvette">Corvette</SelectItem>
+                                    <SelectItem value="Equinox">Equinox</SelectItem>
+                                    <SelectItem value="Malibu">Malibu</SelectItem>
+                                    <SelectItem value="Silverado">Silverado</SelectItem>
+                                    <SelectItem value="Suburban">Suburban</SelectItem>
+                                    <SelectItem value="Tahoe">Tahoe</SelectItem>
+                                    <SelectItem value="Traverse">Traverse</SelectItem>
+                                    <SelectItem value="Trax">Trax</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Ford" && (
+                                  <>
+                                    <SelectItem value="Bronco">Bronco</SelectItem>
+                                    <SelectItem value="EcoSport">EcoSport</SelectItem>
+                                    <SelectItem value="Edge">Edge</SelectItem>
+                                    <SelectItem value="Escape">Escape</SelectItem>
+                                    <SelectItem value="Expedition">Expedition</SelectItem>
+                                    <SelectItem value="Explorer">Explorer</SelectItem>
+                                    <SelectItem value="F-150">F-150</SelectItem>
+                                    <SelectItem value="F-250">F-250</SelectItem>
+                                    <SelectItem value="F-350">F-350</SelectItem>
+                                    <SelectItem value="Mustang">Mustang</SelectItem>
+                                    <SelectItem value="Ranger">Ranger</SelectItem>
+                                    <SelectItem value="Transit">Transit</SelectItem>
+                                    <SelectItem value="Maverick">Maverick</SelectItem>
+                                    <SelectItem value="Mustang Mach-E">Mustang Mach-E</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Honda" && (
+                                  <>
+                                    <SelectItem value="Accord">Accord</SelectItem>
+                                    <SelectItem value="Civic">Civic</SelectItem>
+                                    <SelectItem value="CR-V">CR-V</SelectItem>
+                                    <SelectItem value="HR-V">HR-V</SelectItem>
+                                    <SelectItem value="Insight">Insight</SelectItem>
+                                    <SelectItem value="Odyssey">Odyssey</SelectItem>
+                                    <SelectItem value="Passport">Passport</SelectItem>
+                                    <SelectItem value="Pilot">Pilot</SelectItem>
+                                    <SelectItem value="Ridgeline">Ridgeline</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Hyundai" && (
+                                  <>
+                                    <SelectItem value="Accent">Accent</SelectItem>
+                                    <SelectItem value="Elantra">Elantra</SelectItem>
+                                    <SelectItem value="Ioniq">Ioniq</SelectItem>
+                                    <SelectItem value="Kona">Kona</SelectItem>
+                                    <SelectItem value="Palisade">Palisade</SelectItem>
+                                    <SelectItem value="Santa Fe">Santa Fe</SelectItem>
+                                    <SelectItem value="Sonata">Sonata</SelectItem>
+                                    <SelectItem value="Tucson">Tucson</SelectItem>
+                                    <SelectItem value="Venue">Venue</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Jeep" && (
+                                  <>
+                                    <SelectItem value="Cherokee">Cherokee</SelectItem>
+                                    <SelectItem value="Compass">Compass</SelectItem>
+                                    <SelectItem value="Gladiator">Gladiator</SelectItem>
+                                    <SelectItem value="Grand Cherokee">Grand Cherokee</SelectItem>
+                                    <SelectItem value="Renegade">Renegade</SelectItem>
+                                    <SelectItem value="Wrangler">Wrangler</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Kia" && (
+                                  <>
+                                    <SelectItem value="Forte">Forte</SelectItem>
+                                    <SelectItem value="K5">K5</SelectItem>
+                                    <SelectItem value="Niro">Niro</SelectItem>
+                                    <SelectItem value="Optima">Optima</SelectItem>
+                                    <SelectItem value="Seltos">Seltos</SelectItem>
+                                    <SelectItem value="Sorento">Sorento</SelectItem>
+                                    <SelectItem value="Soul">Soul</SelectItem>
+                                    <SelectItem value="Sportage">Sportage</SelectItem>
+                                    <SelectItem value="Stinger">Stinger</SelectItem>
+                                    <SelectItem value="Telluride">Telluride</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Lexus" && (
+                                  <>
+                                    <SelectItem value="ES">ES</SelectItem>
+                                    <SelectItem value="GS">GS</SelectItem>
+                                    <SelectItem value="GX">GX</SelectItem>
+                                    <SelectItem value="IS">IS</SelectItem>
+                                    <SelectItem value="LC">LC</SelectItem>
+                                    <SelectItem value="LS">LS</SelectItem>
+                                    <SelectItem value="LX">LX</SelectItem>
+                                    <SelectItem value="NX">NX</SelectItem>
+                                    <SelectItem value="RC">RC</SelectItem>
+                                    <SelectItem value="RX">RX</SelectItem>
+                                    <SelectItem value="UX">UX</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Mercedes" && (
+                                  <>
+                                    <SelectItem value="A-Class">A-Class</SelectItem>
+                                    <SelectItem value="C-Class">C-Class</SelectItem>
+                                    <SelectItem value="E-Class">E-Class</SelectItem>
+                                    <SelectItem value="S-Class">S-Class</SelectItem>
+                                    <SelectItem value="GLA">GLA</SelectItem>
+                                    <SelectItem value="GLB">GLB</SelectItem>
+                                    <SelectItem value="GLC">GLC</SelectItem>
+                                    <SelectItem value="GLE">GLE</SelectItem>
+                                    <SelectItem value="GLS">GLS</SelectItem>
+                                    <SelectItem value="G-Class">G-Class</SelectItem>
+                                    <SelectItem value="CLA">CLA</SelectItem>
+                                    <SelectItem value="CLS">CLS</SelectItem>
+                                    <SelectItem value="AMG GT">AMG GT</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Nissan" && (
+                                  <>
+                                    <SelectItem value="Altima">Altima</SelectItem>
+                                    <SelectItem value="Armada">Armada</SelectItem>
+                                    <SelectItem value="Frontier">Frontier</SelectItem>
+                                    <SelectItem value="Kicks">Kicks</SelectItem>
+                                    <SelectItem value="Leaf">Leaf</SelectItem>
+                                    <SelectItem value="Maxima">Maxima</SelectItem>
+                                    <SelectItem value="Murano">Murano</SelectItem>
+                                    <SelectItem value="Pathfinder">Pathfinder</SelectItem>
+                                    <SelectItem value="Rogue">Rogue</SelectItem>
+                                    <SelectItem value="Sentra">Sentra</SelectItem>
+                                    <SelectItem value="Titan">Titan</SelectItem>
+                                    <SelectItem value="Versa">Versa</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Tesla" && (
+                                  <>
+                                    <SelectItem value="Model 3">Model 3</SelectItem>
+                                    <SelectItem value="Model S">Model S</SelectItem>
+                                    <SelectItem value="Model X">Model X</SelectItem>
+                                    <SelectItem value="Model Y">Model Y</SelectItem>
+                                    <SelectItem value="Cybertruck">Cybertruck</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Toyota" && (
+                                  <>
+                                    <SelectItem value="4Runner">4Runner</SelectItem>
+                                    <SelectItem value="Avalon">Avalon</SelectItem>
+                                    <SelectItem value="Camry">Camry</SelectItem>
+                                    <SelectItem value="Corolla">Corolla</SelectItem>
+                                    <SelectItem value="Highlander">Highlander</SelectItem>
+                                    <SelectItem value="Land Cruiser">Land Cruiser</SelectItem>
+                                    <SelectItem value="Prius">Prius</SelectItem>
+                                    <SelectItem value="RAV4">RAV4</SelectItem>
+                                    <SelectItem value="Sequoia">Sequoia</SelectItem>
+                                    <SelectItem value="Sienna">Sienna</SelectItem>
+                                    <SelectItem value="Tacoma">Tacoma</SelectItem>
+                                    <SelectItem value="Tundra">Tundra</SelectItem>
+                                    <SelectItem value="Venza">Venza</SelectItem>
+                                    <SelectItem value="bZ4X">bZ4X</SelectItem>
+                                  </>
+                                )}
+                                {newVehicle.make === "Volkswagen" && (
+                                  <>
+                                    <SelectItem value="Atlas">Atlas</SelectItem>
+                                    <SelectItem value="Golf">Golf</SelectItem>
+                                    <SelectItem value="ID.4">ID.4</SelectItem>
+                                    <SelectItem value="Jetta">Jetta</SelectItem>
+                                    <SelectItem value="Passat">Passat</SelectItem>
+                                    <SelectItem value="Taos">Taos</SelectItem>
+                                    <SelectItem value="Tiguan">Tiguan</SelectItem>
+                                  </>
+                                )}
+                                {/* Add more makes as needed */}
+                                {![
+                                  "Acura",
+                                  "Audi",
+                                  "BMW",
+                                  "Chevrolet",
+                                  "Ford",
+                                  "Honda",
+                                  "Hyundai",
+                                  "Jeep",
+                                  "Kia",
+                                  "Lexus",
+                                  "Mercedes",
+                                  "Nissan",
+                                  "Tesla",
+                                  "Toyota",
+                                  "Volkswagen",
+                                ].includes(newVehicle.make) &&
+                                  newVehicle.make && (
+                                    <SelectItem value="Select Make First">Please select a make first</SelectItem>
+                                  )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Year Range</Label>
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={newVehicle.yearStart.toString()}
+                                onValueChange={(value) =>
+                                  setNewVehicle({ ...newVehicle, yearStart: Number.parseInt(value) })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Start year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from({ length: 16 }, (_, i) => 2009 + i).map((year) => (
+                                    <SelectItem key={year} value={year.toString()}>
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <span>to</span>
+                              <Select
+                                value={newVehicle.yearEnd.toString()}
+                                onValueChange={(value) =>
+                                  setNewVehicle({ ...newVehicle, yearEnd: Number.parseInt(value) })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="End year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from({ length: 16 }, (_, i) => 2009 + i).map((year) => (
+                                    <SelectItem key={year} value={year.toString()}>
+                                      {year}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 lg:col-span-3">
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="maxMileage">
+                                Max Mileage: {newVehicle.maxMileage.toLocaleString()} miles
+                              </Label>
+                            </div>
+                            <Slider
+                              id="maxMileage"
+                              min={0}
+                              max={200000}
+                              step={5000}
+                              value={[newVehicle.maxMileage]}
+                              onValueChange={(value) => setNewVehicle({ ...newVehicle, maxMileage: value[0] })}
+                            />
+                          </div>
+
+                          <div className="space-y-2 lg:col-span-3">
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="maxPrice">Max Price: ${newVehicle.maxPrice.toLocaleString()}</Label>
+                            </div>
+                            <Slider
+                              id="maxPrice"
+                              min={0}
+                              max={45000}
+                              step={500}
+                              value={[newVehicle.maxPrice]}
+                              onValueChange={(value) => setNewVehicle({ ...newVehicle, maxPrice: value[0] })}
+                            />
+                          </div>
+
+                          <div className="lg:col-span-3 space-y-4 pt-4 border-t">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label htmlFor="structuralDamage" className="text-base">
+                                  Structural Damage Ok
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                  Are vehicles with structural damage acceptable?
+                                </p>
+                              </div>
+                              <Switch
+                                id="structuralDamage"
+                                checked={newVehicle.structuralDamageOk}
+                                onCheckedChange={(checked) =>
+                                  setNewVehicle({ ...newVehicle, structuralDamageOk: checked })
+                                }
+                              />
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label htmlFor="accidentHistory" className="text-base">
+                                  Accident History Matters
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                  Does the vehicle's accident history matter?
+                                </p>
+                              </div>
+                              <Switch
+                                id="accidentHistory"
+                                checked={newVehicle.accidentHistoryMatters}
+                                onCheckedChange={(checked) =>
+                                  setNewVehicle({ ...newVehicle, accidentHistoryMatters: checked })
+                                }
+                              />
+                            </div>
+
+                            {newVehicle.accidentHistoryMatters && (
+                              <div className="space-y-2">
+                                <Label htmlFor="accidentHistoryDetails">Accident History Specifications</Label>
+                                <Textarea
+                                  id="accidentHistoryDetails"
+                                  placeholder="Specify any accident history requirements (e.g., minor accidents only, no airbag deployment)"
+                                  value={newVehicle.accidentHistoryDetails}
+                                  onChange={(e) =>
+                                    setNewVehicle({ ...newVehicle, accidentHistoryDetails: e.target.value })
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="flex justify-between border-t p-6">
+                        <Button variant="outline" onClick={() => setCurrentScreen("buyBoxes")}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleAddVehicle} disabled={!newVehicle.make || !newVehicle.model}>
+                          Add Vehicle
+                        </Button>
+                      </CardFooter>
+                    </Card>
+
+                    {/* Display added vehicles */}
+                    {newBuyBox.vehicles.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Vehicles in Buy Box</CardTitle>
+                          <CardDescription>List of vehicles added to this buy box</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            {newBuyBox.vehicles.map((vehicle) => (
+                              <div key={vehicle.id} className="flex items-center justify-between p-3 border rounded-md">
+                                <div>
+                                  {vehicle.make} {vehicle.model} ({vehicle.yearRange})
+                                </div>
+                                <Button variant="destructive" size="sm" onClick={() => handleRemoveVehicle(vehicle.id)}>
+                                  Remove
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </main>
+          </div>
+        )
+
+      case "viewBuyBox":
+        return (
+          <div className="flex min-h-screen bg-muted/40">
+            {/* Sidebar */}
+            <aside className="hidden md:flex w-64 flex-col bg-background border-r p-4">
+              <div className="flex items-center gap-2 mb-6">
+                <Car className="h-6 w-6" />
+                <span className="font-bold text-xl">DealerBuyBox</span>
+              </div>
+              <nav className="space-y-1 flex-1">
+                <button
+                  onClick={() => setCurrentScreen("dashboard")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Home className="h-5 w-5" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("buyBoxes")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-left"
+                >
+                  <Car className="h-5 w-5" />
+                  My Buy Boxes
+                </button>
+                <button
+                  onClick={() => setCurrentScreen("disposition")}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left"
+                >
+                  <Zap className="h-5 w-5" />
+                  Vehicle Disposition
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <User className="h-5 w-5" />
+                  Profile
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted text-left">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </button>
+              </nav>
+              <div className="mt-auto pt-4 border-t">
+                <Button variant="outline" className="w-full justify-start" onClick={() => setCurrentScreen("login")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1 p-4 md:p-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold">View Buy Box</h1>
+                    <p className="text-muted-foreground">Details of the selected buy box</p>
+                  </div>
+                  <div className="mt-4 md:mt-0 flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setCurrentScreen("buyBoxes")}>
+                      Back to Buy Boxes
+                    </Button>
+                    <Button onClick={() => handleExport("Excel")}>Export to Excel</Button>
+                  </div>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Buy Box Information</CardTitle>
+                    <CardDescription>Details about this buy box</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Placeholder content - replace with actual buy box data */}
+                    <p>Buy Box Name: [Buy Box Name]</p>
+                    <p>Description: [Buy Box Description]</p>
+                    <p>Vehicle Count: [Number of Vehicles]</p>
+                    <p>Last Updated: [Date]</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </main>
+          </div>
+        )
+
+      default:
+        return <div>Error: Unknown screen</div>
+    }
+  }
+
+  return renderScreen()
+}
+
