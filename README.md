@@ -19,3 +19,17 @@ A web application that helps auto dealers create their own "buy box" of vehicles
 - Prisma ORM
 - PostgreSQL
 - NextAuth.js for authentication
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or later
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/your-username/dealer-buy-box.git
+   cd dealer-buy-box
